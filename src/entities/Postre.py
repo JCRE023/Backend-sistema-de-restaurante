@@ -1,4 +1,4 @@
-class Postres:
+class Postre:
     def __init__(self, nombre: str, precio: int):
         self.nombre = nombre
         self.precio = precio
