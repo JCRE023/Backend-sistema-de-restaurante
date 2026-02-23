@@ -12,14 +12,14 @@ class Mesa:
         self.disponible = disponible
         self.pedido = []
 
-    def agregar_pedido(self, producto):
+    def agregar_pedido(self, producto) -> None:
         """
         añade un platoprincipal, bebida o postre a la mesa
         """
         self.pedido.append(producto)
         print(f"{producto.nombre} agregado a la {self.nombre}")
 
-    def limpiar_mesa(self):
+    def limpiar_mesa(self) -> None:
         """
         se libera la mesa cuando el cliente paga
         """

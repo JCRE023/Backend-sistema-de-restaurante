@@ -10,7 +10,7 @@ class Postre(Producto):
         self.sabor = sabor
 
     @classmethod
-    def mostrar_postres(cls):
+    def mostrar_postres(cls) -> str:
         """
         Muestra los postres disponibles
         """
