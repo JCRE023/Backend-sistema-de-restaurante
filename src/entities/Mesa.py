@@ -1,3 +1,6 @@
+from producto import Producto
+
+
 class Mesa:
     """
     Crea un objeto mesa para el restaurante
@@ -7,6 +10,21 @@ class Mesa:
         self.nombre = nombre
         self.sillas = sillas
         self.disponible = disponible
+        self.pedido = []
+
+    def agregar_pedido(self, producto):
+        """
+        añade un platoprincipal, bebida o postre a la mesa
+        """
+        self.pedido.append(producto)
+        print(f"{producto.nombre} agregado a la {self.nombre}")
+
+    def limpiar_mesa(self):
+        """
+        se libera la mesa cuando el cliente paga
+        """
+        self.pedido = []
+        self.disponible = True
 
 
 lista_de_mesas = [
@@ -47,7 +65,3 @@ def actualizar_disponibilidad() -> None:
                 mesa.disponible = False
             print(f"La disponibilidad de la {mesa.nombre} ha sido actualizada.")
             break
-
-
-actualizar_disponibilidad()
-mostrar_mesas_disponibles()

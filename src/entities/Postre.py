@@ -1,4 +1,4 @@
-from producto import Producto
+from src.entities.producto import Producto
 
 
 class Postre(Producto):
@@ -9,9 +9,13 @@ class Postre(Producto):
         super().__init__(nombre, precio)
         self.sabor = sabor
 
-    def mostrar_postres() -> None:
+    @classmethod
+    def mostrar_postres(cls):
+        """
+        Muestra los postres disponibles
+        """
         print("Postres del menu:")
-        for postre in Postre.lista_de_postres:
+        for postre in cls.lista_de_postres:
             print(
                 f"Postre: {postre.nombre} | Sabor: {postre.sabor} | Valor: {postre.precio}"
             )
@@ -23,5 +27,3 @@ Postre.lista_de_postres = [
     Postre("copa de fresa", 12000, "fresa"),
     Postre("helado 1 bola", 4000, "vainilla"),
 ]
-
-Postre.mostrar_postres()
