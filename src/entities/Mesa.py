@@ -21,7 +21,7 @@ lista_de_mesas = [
 ]
 
 
-def mostrar_mesas_disponibles() -> str:
+def mostrar_mesas_disponibles() -> None:
     """
     Imprime con un SI o NO si la mesa esta ocupada
     """
@@ -33,7 +33,7 @@ def mostrar_mesas_disponibles() -> str:
             print(f"{mesa.nombre} | Sillas: {mesa.sillas} | Disponible: NO")
 
 
-def actualizar_disponibilidad() -> str:
+def actualizar_disponibilidad() -> None:
     """
     Actualiza a las mesas, si estan disponibles o ocupadas
     """
