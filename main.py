@@ -1,3 +1,11 @@
+from src.entities.Mesa import (
+    Mesa,
+    lista_de_mesas,
+    mostrar_mesas_disponibles,
+    actualizar_disponibilidad,
+)
+
+
 print("¡¡¡Bienvenido al menu del restaurante!!!")
 
 
@@ -19,7 +27,10 @@ def menu_principal():
 
     while True:
         if opcion == "1":
-            print("")
+            print("\n--- RESERVAR MESA ---")
+            mostrar_mesas_disponibles()
+            actualizar_disponibilidad()
+
         elif opcion == "2":
             print("")
         elif opcion == "3":
