@@ -1,6 +1,3 @@
-from producto import Producto
-
-
 class Mesa:
     """
     Crea un objeto mesa para el restaurante
