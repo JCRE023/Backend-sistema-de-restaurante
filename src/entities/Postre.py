@@ -1,21 +1,21 @@
 from producto import Producto
 
-Lista_De_Postres = [
-    Producto("Trufas", 3000),
-    Producto("Brownie", 5000),
-    Producto("Copa de fresa", 12000),
-    Producto("Helado 1 bola", 4000),
-    Producto("Helado 2 bolas", 6000),
+lista_de_postres = [
+    Producto("trufas", 3000),
+    Producto("brownie", 5000),
+    Producto("copa de fresa", 12000),
+    Producto("helado 1 bola", 4000),
+    Producto("helado 2 bolas", 6000),
 ]
 
 
-def Mostrar_Postres() -> str:
+def mostrar_postres() -> str:
     """
     Muestra el catalogo de postres
     """
     print("Postres del menu:")
-    for Postre in Lista_De_Postres:
-        print(f"Postre: {Postre.nombre} Valor: {Postre.precio} ")
+    for postre in lista_de_postres:
+        print(f"Postre: {postre.nombre} Valor: {postre.precio} ")
 
 
-Mostrar_Postres()
+mostrar_postres()
