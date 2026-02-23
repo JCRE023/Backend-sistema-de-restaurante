@@ -3,7 +3,7 @@ class Mesa:
     Crea un objeto mesa para el restaurante
     """
 
-    def __init__(self, nombre: str, sillas: int, disponible: bool):
+    def __init__(self, nombre: str, sillas: int, disponible: bool) -> None:
         self.nombre = nombre
         self.sillas = sillas
         self.disponible = disponible
@@ -21,7 +21,7 @@ lista_de_mesas = [
 ]
 
 
-def Mostrar_Mesas_Disponibles():
+def Mostrar_Mesas_Disponibles() -> str:
     """
     Imprime con un SI o NO si la mesa esta ocupada
     """
@@ -33,7 +33,7 @@ def Mostrar_Mesas_Disponibles():
             print(f"{mesa.nombre} | Sillas: {mesa.sillas} | Disponible: NO")
 
 
-def actualizar_disponibilidad():
+def actualizar_disponibilidad() -> str:
     """
     Actualiza a las mesas, si estan disponibles o ocupadas
     """
