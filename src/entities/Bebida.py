@@ -31,4 +31,3 @@ Bebida.lista_de_bebidas = [
     Bebida("Jugo Hit", 3000, "Hit", "500 ml"),
     Bebida("Agua", 2000, "Cristal", "600 ml"),
 ]
-print("version final correcta")
