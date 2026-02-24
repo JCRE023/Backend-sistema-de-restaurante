@@ -7,6 +7,21 @@ class Mesa:
         self.nombre = nombre
         self.sillas = sillas
         self.disponible = disponible
+        self.pedido = []
+
+    def agregar_pedido(self, producto) -> None:
+        """
+        añade un platoprincipal, bebida o postre a la mesa
+        """
+        self.pedido.append(producto)
+        print(f"{producto.nombre} agregado a la {self.nombre}")
+
+    def limpiar_mesa(self) -> None:
+        """
+        se libera la mesa cuando el cliente paga
+        """
+        self.pedido = []
+        self.disponible = True
 
 
 lista_de_mesas = [
@@ -33,21 +48,26 @@ def mostrar_mesas_disponibles() -> None:
             print(f"{mesa.nombre} | Sillas: {mesa.sillas} | Disponible: NO")
 
 
-def actualizar_disponibilidad() -> None:
+def buscar_mesa_por_nombre(nombre_buscado: str) -> object:
     """
-    Actualiza a las mesas, si estan disponibles o ocupadas
+    Busca una mesa por su nombre y devuelve el objeto correspondiente.
     """
-    buscar = input("Introduce el nombre de la mesa (Ej: Mesa 3): ")
     for mesa in lista_de_mesas:
-        if mesa.nombre == buscar:
-            respuesta = input(f"¿Está la {mesa.nombre} disponible? (si/no): ").lower()
-            if respuesta == "si":
-                mesa.disponible = True
-            else:
-                mesa.disponible = False
-            print(f"La disponibilidad de la {mesa.nombre} ha sido actualizada.")
-            break
+        if mesa.nombre.lower() == nombre_buscado.lower():
+            return mesa
+    return None
 
 
-actualizar_disponibilidad()
-mostrar_mesas_disponibles()
+def actualizar_disponibilidad() -> str:
+    """
+    Actualiza las mesas, si estan disponibles o no.
+    """
+    nombre = input("Introduce el nombre de la mesa (Ej: Mesa 3): ")
+    mesa = buscar_mesa_por_nombre(nombre)
+
+    if mesa:
+        respuesta = input(f"Esta la {mesa.nombre} disponible? (si/no): ")
+        mesa.disponible = respuesta == "si"
+        print(f"La disponibilidad ded la {mesa.nombre} ha sido actualizada")
+    else:
+        print("Error, la mesa no existe.")
