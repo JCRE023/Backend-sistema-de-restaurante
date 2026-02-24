@@ -1,10 +1,7 @@
-from src.entities.Mesa import (
-    Mesa,
-    lista_de_mesas,
-    mostrar_mesas_disponibles,
-    actualizar_disponibilidad,
-)
-
+from src.entities.Factura import Factura
+from src.entities.Plato_principal import PlatoPrincipal
+from src.entities.Postre import Postre
+from src.entities.Mesa import Mesa, mostrar_mesas_disponibles, buscar_mesa_por_nombre
 
 print("¡¡¡Bienvenido al menu del restaurante!!!")
 
@@ -27,12 +24,52 @@ def menu_principal():
 
     while True:
         if opcion == "1":
-            print("\n--- RESERVAR MESA ---")
+            print("\n--- GESTIÓN DE DISPONIBILIDAD ---")
             mostrar_mesas_disponibles()
-            actualizar_disponibilidad()
+
+            nombre_m = input("\nIntroduce el nombre de la mesa (Ej: Mesa 1): ")
+            mesa = buscar_mesa_por_nombre(nombre_m)
+
+            if mesa:
+
+                print(
+                    f"La {mesa.nombre} actualmente está {'Disponible' if mesa.disponible else 'Ocupada'}."
+                )
+                respuesta = input("¿Desea cambiar su estado? (si/no): ").lower()
+
+                if respuesta == "si":
+
+                    mesa.disponible = not mesa.disponible
+                    print(
+                        f"Éxito: La {mesa.nombre} ahora está {'Disponible' if mesa.disponible else 'Ocupada'}."
+                    )
+            else:
+                print("Error: Esa mesa no existe.")
 
         elif opcion == "2":
-            print("")
+            print("\n--- NUEVA ORDEN ---")
+            nombre_m = input("¿Para qué mesa es el pedido?: ")
+            mesa = buscar_mesa_por_nombre(nombre_m)
+
+            if mesa:
+
+                PlatoPrincipal.mostrar_platos_principales()
+                Postre.mostrar_postres()
+                Bebida.mostrar_bebidas()
+
+                prod_nombre = input("\nEscribe el nombre del producto: ")
+
+                producto = buscar_producto(prod_nombre)
+
+                if producto:
+
+                    mesa.agregar_pedido(producto)
+
+                    mesa.disponible = False
+                else:
+                    print("Error: El producto no existe en el menú.")
+            else:
+                print("Error: Mesa no encontrada.")
         elif opcion == "3":
             print("")
         elif opcion == "4":
@@ -64,3 +101,29 @@ def menu_principal():
 
 
 menu_principal()
+
+
+def buscar_producto(nombre: str):
+    """
+    Busca un producto por su nombre en las listas de platos, bebidas y postres.
+
+    Args:
+        nombre (str): El nombre del artículo a buscar.
+
+    Returns:
+        Union[PlatoPrincipal, Postre, None]: El objeto encontrado o None.
+    """
+
+    for plato in PlatoPrincipal.lista_de_platos_principales:
+        if plato.nombre.lower() == nombre.lower():
+            return plato
+
+    for postre in Postre.lista_de_postres:
+        if postre.nombre.lower() == nombre.lower():
+            return postre
+
+    for bebida in Bebida.lista_de_bebidas:
+        if bebida.nombre.lower() == nombre.lower():
+            return bebida
+
+    return None
