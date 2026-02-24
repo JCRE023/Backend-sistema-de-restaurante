@@ -1,3 +1,4 @@
+from src.entities.Bebida import Bebida
 from src.entities.Factura import Factura
 from src.entities.Plato_principal import PlatoPrincipal
 from src.entities.Postre import Postre
