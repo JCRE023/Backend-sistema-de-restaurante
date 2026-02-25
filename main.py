@@ -149,7 +149,18 @@ def menu_principal():
         elif opcion == "4":
             print("")
         elif opcion == "5":
-            print("")
+            print("\n--- CALCULAR CUENTA ---")
+            nombre_m = input("¿Para qué mesa deseas calcular la cuenta?: ")
+            mesa = buscar_mesa_por_nombre(nombre_m)
+            if mesa:
+                if len(mesa.pedido) == 0:
+                    print("Error: La mesa no tiene pedidos registrados.")
+                else:
+                    factura = Factura(mesa.pedido)
+                    factura.calcular_cuenta()
+                    factura.mostrar_detalle()
+            else:
+                print("Error: Mesa no encontrada.")
         elif opcion == "6":
             print("")
         elif opcion == "7":
@@ -277,6 +288,7 @@ def menu_principal():
             "4. Aplicar propina\n"
             "5. Calcular cuenta\n"
             "6. Pagar\n"
+            "7. añadir / eliminar producto del catalogo\n"
             "0. Salir\n"
             "Seleccione una opción: "
         )
