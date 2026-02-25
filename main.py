@@ -147,7 +147,29 @@ def menu_principal():
                     print("Error: El producto no existe en el menú.")
 
         elif opcion == "4":
-            print("")
+            print("\nAPLICAR PROPINA")
+            nombre_m = input("¿A qué mesa desea aplicar propina?: ")
+            mesa = buscar_mesa_por_nombre(nombre_m)
+
+            if mesa:
+                if len(mesa.pedido) > 0:
+                    total = sum(producto.precio for producto in mesa.pedido)
+                    porcentaje = float(
+                        input(
+                            "Ingrese el porcentaje de propina que desea aplicar en la mesa: "
+                        )
+                    )
+                    propina = total * (porcentaje / 100)
+                    mesa.propina = total * (porcentaje / 100)
+
+                    print(f"Total sin propina: ${total}")
+                    print(f"Propina: ${mesa.propina}")
+                    print(f"Total con propina: ${total + mesa.propina}")
+                else:
+                    print("La mesa no tiene pedidos registrados.")
+            else:
+                print("Mesa no encontrada.")
+
         elif opcion == "5":
             print("\n--- CALCULAR CUENTA ---")
             nombre_m = input("¿Para qué mesa deseas calcular la cuenta?: ")
@@ -162,7 +184,25 @@ def menu_principal():
             else:
                 print("Error: Mesa no encontrada.")
         elif opcion == "6":
-            print("")
+            print("\nPAGAR CUENTA")
+            nombre_m = input("¿Qué mesa desea pagar?: ")
+            mesa = buscar_mesa_por_nombre(nombre_m)
+
+            if mesa:
+                if len(mesa.pedido) > 0:
+                    total = sum(producto.precio for producto in mesa.pedido)
+                    total_final = total + mesa.propina
+
+                    print(f"Total a pagar: ${total_final}")
+                    print("Pago realizado con éxito.")
+
+                    mesa.pedido.clear()
+                    mesa.propina = 0
+                    mesa.disponible = True
+                else:
+                    print("La mesa no tiene pedidos.")
+            else:
+                print("Mesa no encontrada.")
         elif opcion == "7":
             print("\n--- Agregar / eliminar producto ---")
 
