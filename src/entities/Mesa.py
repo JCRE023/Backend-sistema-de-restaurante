@@ -23,6 +23,22 @@ class Mesa:
         self.pedido = []
         self.disponible = True
 
+    def mostrar_pedido(self):
+        for n in self.pedido:
+            print(f"Nombre: {n.nombre} ")
+
+    def eliminar_pedido(self, elimina: str) -> None:
+
+        almacenar = None
+
+        for i in self.pedido:
+            if i.nombre.lower() == elimina.lower():
+                almacenar = i
+                break
+
+        if almacenar:
+            self.pedido.remove(almacenar)
+
 
 lista_de_mesas = [
     Mesa("Mesa 1", 4, True),
