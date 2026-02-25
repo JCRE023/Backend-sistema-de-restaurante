@@ -23,7 +23,7 @@ class Mesa:
         self.pedido = []
         self.disponible = True
 
-    def mostrar_pedido(self):
+    def mostrar_pedido(self) -> str:
         """
         muestra el pedido de cada mesa
         """
