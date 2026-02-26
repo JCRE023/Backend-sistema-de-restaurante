@@ -37,3 +37,10 @@ class Factura:
         print(f"Propina:        ${self.propina:>8}")
         print(f"TOTAL:          ${self.total_final:>8}")
         print("=" * 25)
+
+    def aplicar_propina_monto(self, monto: float) -> None:
+        """
+        Aplica un monto de propina ya calculado previamente
+        """
+        self.propina = monto
+        self.total_final = self.subtotal + self.propina

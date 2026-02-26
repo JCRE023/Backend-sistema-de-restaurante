@@ -174,12 +174,14 @@ def menu_principal():
             print("\n--- CALCULAR CUENTA ---")
             nombre_m = input("¿Para qué mesa deseas calcular la cuenta?: ")
             mesa = buscar_mesa_por_nombre(nombre_m)
+
             if mesa:
                 if len(mesa.pedido) == 0:
                     print("Error: La mesa no tiene pedidos registrados.")
                 else:
                     factura = Factura(mesa.pedido)
                     factura.calcular_cuenta()
+                    factura.aplicar_propina_monto(mesa.propina)
                     factura.mostrar_detalle()
             else:
                 print("Error: Mesa no encontrada.")
