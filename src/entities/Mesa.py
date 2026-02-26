@@ -8,6 +8,7 @@ class Mesa:
         self.sillas = sillas
         self.disponible = disponible
         self.pedido = []
+        self.propina = 0
 
     def agregar_pedido(self, producto) -> None:
         """
