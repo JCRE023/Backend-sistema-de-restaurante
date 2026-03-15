@@ -1,22 +1,34 @@
-class Producto:
-    def __init__(self, nombre: str, precio: float):
-        self.__nombre = nombre
-        self.__precio = precio
+import uuid
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, Float, ForeignKey, DateTime, Text
+from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
+from database import Base
 
-    @property
-    def nombre(self):
-        return self.__nombre
 
-    @nombre.setter
-    def nombre(self, nombre: str):
-        self.__nombre = nombre.rstrip()
+class Producto(Base):
+    """Modelo de productos con auditoría completa"""
 
-    @property
-    def precio(self):
-        return self.__precio
+    __tablename__ = "producto"
 
-    @precio.setter
-    def precio(self, precio: float):
-        if precio < 0:
-            return "¡El precio debe ser mayor a cero!"
-        self.__precio = precio
+    id_producto = Column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True
+    )
+    nombre = Column(String(100), nullable=False, unique=True)
+    descripcion = Column(Text, nullable=True)
+    precio = Column(Float, nullable=False)
+    categoria = Column(String(50), nullable=False)
+
+    fecha_creacion = Column(DateTime(timezone=True), server_default=func.now())
+    fecha_edicion = Column(DateTime(timezone=True), onupdate=func.now())
+    id_usuario_creacion = Column(
+        UUID(as_uuid=True), ForeignKey("usuario.id"), nullable=False
+    )
+    id_usuario_edita = Column(
+        UUID(as_uuid=True), ForeignKey("usuario.id"), nullable=True
+    )
+
+    usuario_creacion = relationship("Usuario", foreign_keys=[id_usuario_creacion])
+    usuario_edita = relationship("Usuario", foreign_keys=[id_usuario_edita])
+
+    detalles = relationship("DetalleOrden", back_populates="producto")
