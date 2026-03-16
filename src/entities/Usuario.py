@@ -1,0 +1,36 @@
+"""
+Modelo ORM que representa la entidad Usuario del sistema.
+"""
+
+import uuid
+from datetime import datetime, timezone
+
+from sqlalchemy import Column, String, DateTime
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+
+from src.database.config import Base
+
+
+class Usuario(Base):
+    """
+    Representa un usuario dentro del sistema.
+
+
+    """
+
+    __tablename__ = "usuario"
+
+    id_usuario = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    username = Column(String(100), nullable=False, unique=True)
+
+    password = Column(String(255), nullable=False)
+
+    rol = Column(String(50), nullable=False)
+
+    fecha_creacion = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    fecha_actualizacion = Column(DateTime, onupdate=lambda: datetime.now(timezone.utc))
+
+    facturas = relationship("Factura", back_populates="usuario")
