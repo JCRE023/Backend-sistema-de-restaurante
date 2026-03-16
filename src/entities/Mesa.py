@@ -10,7 +10,7 @@ from src.database.config import Base
 
 class Mesa(Base):
 
-    __tablename__ = "mesas"
+    __tablename__ = "mesa"
 
     id_mesa = Column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True
@@ -22,11 +22,12 @@ class Mesa(Base):
     fecha_edicion = Column(DateTime(timezone=True), onupdate=func.now())
 
     id_usuario_creacion = Column(
-        UUID(as_uuid=True), ForeignKey("usuarios.id_usuario"), nullable=False
+        UUID(as_uuid=True), ForeignKey("usuario.id_usuario"), nullable=False
     )
     id_usuario_edicion = Column(
-        UUID(as_uuid=True), ForeignKey("usuarios.id_usuario"), nullable=True
+        UUID(as_uuid=True), ForeignKey("usuario.id_usuario"), nullable=True
     )
 
     usuario_creacion = relationship("Usuario", foreign_keys=[id_usuario_creacion])
     usuario_edicion = relationship("Usuario", foreign_keys=[id_usuario_edicion])
+    orden = relationship("Orden", back_populates="mesa")
