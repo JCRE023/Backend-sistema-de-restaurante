@@ -3,9 +3,8 @@ Modelo ORM que representa la entidad Usuario del sistema.
 """
 
 import uuid
-from datetime import datetime, timezone
 
-from sqlalchemy import Column, String, DateTime
+from sqlalchemy import Column, String, DateTime, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -15,8 +14,6 @@ from src.database.config import Base
 class Usuario(Base):
     """
     Representa un usuario dentro del sistema.
-
-
     """
 
     __tablename__ = "usuario"
@@ -29,8 +26,10 @@ class Usuario(Base):
 
     rol = Column(String(50), nullable=False)
 
-    fecha_creacion = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    fecha_creacion = Column(DateTime, server_default=func.now(), nullable=False)
 
-    fecha_actualizacion = Column(DateTime, onupdate=lambda: datetime.now(timezone.utc))
+    fecha_actualizacion = Column(
+        DateTime, server_default=func.now(), onupdate=func.now()
+    )
 
     facturas = relationship("Factura", back_populates="usuario")

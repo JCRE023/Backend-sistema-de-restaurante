@@ -3,9 +3,8 @@ Modelo ORM que representa la entidad Factura del sistema.
 """
 
 import uuid
-from datetime import datetime, timezone
 
-from sqlalchemy import Column, Float, DateTime, ForeignKey
+from sqlalchemy import Column, Float, DateTime, ForeignKey, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -15,8 +14,6 @@ from src.database.config import Base
 class Factura(Base):
     """
     Representa una factura generada en el sistema.
-
-
     """
 
     __tablename__ = "factura"
@@ -33,9 +30,11 @@ class Factura(Base):
         UUID(as_uuid=True), ForeignKey("usuario.id_usuario"), nullable=False
     )
 
-    fecha_creacion = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    fecha_creacion = Column(DateTime, server_default=func.now(), nullable=False)
 
-    fecha_actualizacion = Column(DateTime, onupdate=lambda: datetime.now(timezone.utc))
+    fecha_actualizacion = Column(
+        DateTime, server_default=func.now(), onupdate=func.now()
+    )
 
     orden = relationship("Orden", back_populates="factura")
 
