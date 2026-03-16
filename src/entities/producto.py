@@ -22,13 +22,13 @@ class Producto(Base):
     fecha_creacion = Column(DateTime(timezone=True), server_default=func.now())
     fecha_edicion = Column(DateTime(timezone=True), onupdate=func.now())
     id_usuario_creacion = Column(
-        UUID(as_uuid=True), ForeignKey("usuario.id"), nullable=False
+        UUID(as_uuid=True), ForeignKey("usuario.id_usuario"), nullable=False
     )
     id_usuario_edita = Column(
-        UUID(as_uuid=True), ForeignKey("usuario.id"), nullable=True
+        UUID(as_uuid=True), ForeignKey("usuario.id_usuario"), nullable=True
     )
 
     usuario_creacion = relationship("Usuario", foreign_keys=[id_usuario_creacion])
     usuario_edita = relationship("Usuario", foreign_keys=[id_usuario_edita])
 
-    detalles = relationship("DetalleOrden", back_populates="producto")
+    detalles = relationship("Detalle_orden", back_populates="producto")
