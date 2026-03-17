@@ -16,5 +16,5 @@ class Detalle_orden(Base):
         UUID(as_uuid=True), ForeignKey("producto.id_producto"), nullable=False
     )
 
-    orden = relationship("Orden", back_populates="detalles")
-    producto = relationship("Producto", foreign_keys=[id_producto])
+    orden = relationship("Orden", back_populates="detalle")
+    producto = relationship("Producto", ack_populates="detalle")
