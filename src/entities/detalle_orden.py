@@ -1,6 +1,6 @@
 import uuid
-from database.config import Base
-from sqlalchemy import Column, Integer, DateTime, ForeignKey
+from src.database.config import Base
+from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -16,5 +16,5 @@ class Detalle_orden(Base):
         UUID(as_uuid=True), ForeignKey("producto.id_producto"), nullable=False
     )
 
-    orden = relationship("Orden", back_populates="detalles")
-    producto = relationship("Producto", foreign_keys=[id_producto])
+    orden = relationship("Orden", back_populates="detalle")
+    producto = relationship("Producto", back_populates="detalle")
