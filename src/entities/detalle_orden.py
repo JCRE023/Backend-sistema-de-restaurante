@@ -1,6 +1,6 @@
 import uuid
-from database.config import Base
-from sqlalchemy import Column, Integer, DateTime, ForeignKey
+from src.database.config import Base
+from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
