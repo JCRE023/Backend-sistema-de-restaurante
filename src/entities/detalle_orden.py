@@ -17,4 +17,4 @@ class Detalle_orden(Base):
     )
 
     orden = relationship("Orden", back_populates="detalle")
-    producto = relationship("Producto", ack_populates="detalle")
+    producto = relationship("Producto", back_populates="detalle")
