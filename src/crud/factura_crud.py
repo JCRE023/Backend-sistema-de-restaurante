@@ -17,7 +17,11 @@ def crear(
     id_orden: UUID,
     id_usuario: UUID,
 ) -> Factura:
-    """Crea una nueva factura."""
+    """
+    Crea una nueva factura.
+
+
+    """
 
     factura = Factura(
         total=total,
@@ -33,15 +37,29 @@ def crear(
 
 
 def obtener_por_id(id_factura: UUID) -> Optional[Factura]:
+    """
+    Obtiene una factura por su ID.
+
+
+    """
+
     return db.query(Factura).filter(Factura.id_factura == id_factura).first()
 
 
 def obtener_todos() -> List[Factura]:
+    """
+    Obtiene todas las facturas.
+
+    """
+
     return db.query(Factura).all()
 
 
 def obtener_por_usuario(id_usuario: UUID) -> List[Factura]:
-    """Obtiene todas las facturas de un usuario."""
+    """
+    Obtiene todas las facturas de un usuario.
+
+    """
 
     return db.query(Factura).filter(Factura.id_usuario == id_usuario).all()
 
@@ -51,6 +69,10 @@ def actualizar(
     *,
     total: Optional[float] = None,
 ) -> Optional[Factura]:
+    """
+    Actualiza una factura.
+
+    """
 
     factura = obtener_por_id(id_factura)
 
@@ -67,6 +89,11 @@ def actualizar(
 
 
 def eliminar(id_factura: UUID) -> bool:
+    """
+    Elimina una factura.
+
+    """
+
     factura = obtener_por_id(id_factura)
 
     if not factura:

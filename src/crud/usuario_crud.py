@@ -1,6 +1,6 @@
 """
 CRUD para la entidad Usuario.
-Incluye creación, login y operaciones básicas.
+Incluye creación, autenticación y operaciones básicas.
 """
 
 import hashlib
@@ -14,7 +14,10 @@ db = SessionLocal()
 
 
 def _hash_contrasena(contrasena: str) -> str:
-    """Hashea la contraseña con SHA-256."""
+    """
+    Genera un hash SHA-256 de la contraseña.
+
+    """
     return hashlib.sha256(contrasena.encode("utf-8")).hexdigest()
 
 
@@ -23,7 +26,10 @@ def crear(
     password: str,
     rol: str = "usuario",
 ) -> Usuario:
-    """Crea un nuevo usuario."""
+    """
+    Crea un nuevo usuario en la base de datos.
+
+    """
 
     existente = db.query(Usuario).filter(Usuario.username == username.strip()).first()
 
@@ -44,7 +50,11 @@ def crear(
 
 
 def login(username: str, password: str) -> Optional[Usuario]:
-    """Verifica credenciales."""
+    """
+    Verifica las credenciales de un usuario.
+
+
+    """
 
     usuario = obtener_por_username(username)
 
@@ -58,14 +68,27 @@ def login(username: str, password: str) -> Optional[Usuario]:
 
 
 def obtener_por_id(id_usuario: UUID) -> Optional[Usuario]:
+    """
+    Obtiene un usuario por su ID.
+
+
+    """
     return db.query(Usuario).filter(Usuario.id_usuario == id_usuario).first()
 
 
 def obtener_por_username(username: str) -> Optional[Usuario]:
+    """
+    Obtiene un usuario por su nombre de usuario.
+
+    """
     return db.query(Usuario).filter(Usuario.username == username.strip()).first()
 
 
 def obtener_todos() -> List[Usuario]:
+    """
+    Obtiene todos los usuarios registrados.
+
+    """
     return db.query(Usuario).all()
 
 
@@ -76,6 +99,10 @@ def actualizar(
     password: Optional[str] = None,
     rol: Optional[str] = None,
 ) -> Optional[Usuario]:
+    """
+    Actualiza los datos de un usuario.
+
+    """
 
     usuario = obtener_por_id(id_usuario)
 
@@ -98,6 +125,11 @@ def actualizar(
 
 
 def eliminar(id_usuario: UUID) -> bool:
+    """
+    Elimina un usuario de la base de datos.
+
+    """
+
     usuario = obtener_por_id(id_usuario)
 
     if not usuario:
