@@ -16,7 +16,7 @@ class Mesa(Base):
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True
     )
     numero_mesa = Column(String(50), nullable=False, unique=True)
-    estado = Column(String(20), nullable=False, default="disponible")
+    estado = Column(String(20), nullable=False, default="DISPONIBLE")
 
     fecha_creacion = Column(DateTime(timezone=True), server_default=func.now())
     fecha_edicion = Column(DateTime(timezone=True), onupdate=func.now())
