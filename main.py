@@ -10,6 +10,7 @@ from src.crud.Detalle_orden_crud import Detalle_orden_crud
 from src.crud.Orden_crud import Orden_crud
 from src.crud.Producto_crud import ProductoCRUD
 from src.crud import Mesa_crud as crud_mesa
+from src.entities.Orden import Orden
 
 from src.entities.Usuario import Usuario
 
@@ -87,7 +88,7 @@ def menu_mesas(usuario_id: UUID) -> None:
                 print(f"ID: {m.id_mesa} | Nº: {m.numero_mesa} | Estado: {m.estado}")
         elif op == "2":
             num = leer_texto("Número/Nombre de mesa: ")
-            est = leer_texto("Estado (DISPONIBLE/OCUPADA): ", "DISPONIBLE")
+            est = leer_texto("Estado (disponible/ocupada): ", "DISPONIBLE")
             try:
                 crud_mesa.crear_mesa(num, usuario_id, est)
                 print("Mesa creada.")
@@ -124,36 +125,110 @@ def menu_productos(db_session, usuario_id: UUID) -> None:
                 print("Producto creado.")
             except Exception as e:
                 print(f"Error: {e}")
+        elif op == "3":
+            for p in crud.obtener_productos():
+                print(f"ID: {p.id_producto} | {p.nombre} | ${p.precio}")
+            id_p = leer_uuid("ID del producto a editar: ")
+            if id_p:
+                print("(Deje en blanco para mantener el valor actual)")
+                nom = leer_texto("Nuevo nombre: ")
+                pre_str = leer_texto("Nuevo precio: ")
+                cat = leer_texto("Nueva categoría: ")
+                desc = leer_texto("Nueva descripción: ")
+
+                campos = {}
+                if nom:
+                    campos["nombre"] = nom
+                if pre_str:
+                    campos["precio"] = float(pre_str)
+                if cat:
+                    campos["categoria"] = cat
+                if desc:
+                    campos["descripcion"] = desc
+
+                try:
+                    crud.actualizar_producto(id_p, usuario_id, **campos)
+                    print(">>> Producto actualizado correctamente.")
+                except Exception as e:
+                    print(f"Error al actualizar: {e}")
+        elif op == "4":
+            for p in crud.obtener_productos():
+                print(f"ID: {p.id_producto} | {p.nombre} | ${p.precio}")
+            id_p = leer_uuid("ID del producto a eliminar: ")
+            if id_p:
+                try:
+                    if crud.eliminar_producto(id_p):
+                        print(">>> Producto eliminado exitosamente.")
+                    else:
+                        print("No se encontró el producto.")
+                except Exception as e:
+                    print(
+                        "\n[!] ERROR DE INTEGRIDAD: No se puede eliminar el producto."
+                    )
+                    print("Motivo: El producto está vinculado a una orden existente.")
+                    db_session.rollback()
 
 
 def menu_ordenes(db_session, usuario_id: UUID) -> None:
     crud = Orden_crud(db_session)
+
     while True:
         print("\n--- Gestión de Órdenes (Servicio) ---")
-        print("1. Abrir Orden  2. Cerrar Orden  3. Ver Detalles de Orden  0. Volver")
+        print("1. Abrir Orden  2. Cerrar Orden  3. Listado de Órdenes  0. Volver")
         op = leer_texto("Opción: ")
+
         if op == "0":
             break
 
         if op == "1":
-            id_m = leer_uuid("ID de Mesa: ")
+            print("\nMesas disponibles:")
+            for m in crud_mesa.obtener_todos():
+                if m.estado.upper() == "DISPONIBLE":
+                    print(f"ID: {m.id_mesa} | Mesa: {m.numero_mesa}")
+
+            id_m = leer_uuid("\nID de Mesa: ")
             if id_m:
                 try:
                     o = crud.crear_orden(id_m, usuario_id)
-                    print(f"Orden {o.id_orden} abierta en mesa {id_m}.")
+                    print(f"\n>>> ÉXITO: Orden {o.id_orden} abierta en mesa {id_m}.")
                 except Exception as e:
                     print(f"Error: {e}")
+
         elif op == "2":
-            id_o = leer_uuid("ID de Orden a cerrar: ")
+            print("\nÓrdenes abiertas:")
+            ordenes_abiertas = (
+                db_session.query(Orden).filter(Orden.estado == "abierta").all()
+            )
+
+            if not ordenes_abiertas:
+                print("No hay órdenes abiertas.")
+                continue
+
+            for o in ordenes_abiertas:
+                print(f"ID Orden: {o.id_orden} | Mesa: {o.mesa.numero_mesa}")
+
+            id_o = leer_uuid("\nID de Orden a cerrar: ")
             if id_o:
-                crud.cerrar_orden(id_o)
-                print("Orden cerrada y mesa liberada.")
+                try:
+                    crud.cerrar_orden(id_o)
+                    print("\n>>> Orden cerrada y mesa liberada correctamente.")
+                except Exception as e:
+                    print(f"Error: {e}")
+                    db_session.rollback()
+
+        elif op == "3":
+            print("\n--- Listado de Órdenes ---")
+            ordenes = db_session.query(Orden).all()
+            for o in ordenes:
+                print(
+                    f"ID: {o.id_orden} | Estado: {o.estado.upper()} | Mesa: {o.mesa.numero_mesa}"
+                )
 
 
 def menu_detalles_orden(db_session) -> None:
     crud = Detalle_orden_crud(db_session)
     while True:
-        print("\n--- Detalles de Comanda (Items) ---")
+        print("\n--- Detalles de Orden (Items) ---")
         print(
             "1. Agregar Producto a Orden  2. Modificar Cantidad  3. Quitar Item  0. Volver"
         )
@@ -208,7 +283,7 @@ def main() -> None:
         print("1. Mesas")
         print("2. Productos")
         print("3. Órdenes (Apertura/Cierre)")
-        print("4. Comandas (Agregar Items)")
+        print("4. Detalles de Orden (Agregar Items)")
         print("5. Facturación")
         print("0. Salir")
 
