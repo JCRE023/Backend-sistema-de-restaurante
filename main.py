@@ -117,9 +117,10 @@ def ingresar_o_crear_usuario() -> Optional[Usuario]:
         o None si el usuario elige salir sin autenticarse.
 
     """
+
     while True:
         print("\n--- Inicio de Sesión / Registro ---")
-        print("1. Login  2. Crear Usuario  0. Salir")
+        print("1. Login  2. Crear Usuario (Primer registro)  0. Salir")
         op = leer_texto("Opción: ")
 
         if op == "0":
@@ -128,39 +129,20 @@ def ingresar_o_crear_usuario() -> Optional[Usuario]:
         nombre = leer_texto("Usuario: ")
         contra = leer_texto("Contraseña: ")
 
-        if not nombre or not contra:
-            print("Usuario y contraseña son obligatorios.")
-            continue
-
         if op == "1":
             usuario = crud_usuario.login(nombre, contra)
-
             if usuario:
-                print(f"\nBienvenido, {usuario.username} ({usuario.rol}).\n")
+                print(f"\nBienvenido, {usuario.username}.\n")
                 return usuario
-
             print("Credenciales incorrectas.")
 
         elif op == "2":
-            confirmar = leer_texto("Confirmar contraseña: ")
-
-            if contra != confirmar:
-                print("Las contraseñas no coinciden.")
-                continue
-
             rol = leer_texto("Rol (usuario/admin): ", "usuario")
-
-            if rol not in ["usuario", "admin"]:
-                print("Rol inválido. Se asignará 'usuario'.")
-                rol = "usuario"
-
             try:
                 nuevo_usuario = crud_usuario.crear(nombre, contra, rol)
                 print(f"Usuario {nuevo_usuario.username} creado exitosamente.")
-            except ValueError:
-                print("El usuario ya existe.")
             except Exception as e:
-                print("Error:", e)
+                print("Error al crear usuario:", e)
 
 
 def menu_mesas(usuario_id: UUID) -> None:
