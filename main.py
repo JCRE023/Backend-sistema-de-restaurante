@@ -117,10 +117,9 @@ def ingresar_o_crear_usuario() -> Optional[Usuario]:
         o None si el usuario elige salir sin autenticarse.
 
     """
-
     while True:
         print("\n--- Inicio de Sesión / Registro ---")
-        print("1. Login  2. Crear Usuario (Primer registro)  0. Salir")
+        print("1. Login  2. Crear Usuario  0. Salir")
         op = leer_texto("Opción: ")
 
         if op == "0":
@@ -129,20 +128,39 @@ def ingresar_o_crear_usuario() -> Optional[Usuario]:
         nombre = leer_texto("Usuario: ")
         contra = leer_texto("Contraseña: ")
 
+        if not nombre or not contra:
+            print("Usuario y contraseña son obligatorios.")
+            continue
+
         if op == "1":
             usuario = crud_usuario.login(nombre, contra)
+
             if usuario:
-                print(f"\nBienvenido, {usuario.username}.\n")
+                print(f"\nBienvenido, {usuario.username} ({usuario.rol}).\n")
                 return usuario
+
             print("Credenciales incorrectas.")
 
         elif op == "2":
+            confirmar = leer_texto("Confirmar contraseña: ")
+
+            if contra != confirmar:
+                print("Las contraseñas no coinciden.")
+                continue
+
             rol = leer_texto("Rol (usuario/admin): ", "usuario")
+
+            if rol not in ["usuario", "admin"]:
+                print("Rol inválido. Se asignará 'usuario'.")
+                rol = "usuario"
+
             try:
                 nuevo_usuario = crud_usuario.crear(nombre, contra, rol)
                 print(f"Usuario {nuevo_usuario.username} creado exitosamente.")
+            except ValueError:
+                print("El usuario ya existe.")
             except Exception as e:
-                print("Error al crear usuario:", e)
+                print("Error:", e)
 
 
 def menu_mesas(usuario_id: UUID) -> None:
@@ -423,22 +441,42 @@ def menu_facturas(usuario_id: UUID) -> None:
     Returns:
     None
     """
-    while True:
-        print("\n--- Facturación ---")
-        print("1. Listar Todas  2. Generar Factura  3. Buscar por Usuario  0. Volver")
-        op = leer_texto("Opción: ")
-        if op == "0":
-            break
 
-        if op == "1":
-            for f in crud_factura.obtener_todos():
-                print(f"ID: {f.id_factura} | Total: {f.total} | Orden: {f.id_orden}")
-        elif op == "2":
-            id_o = leer_uuid("ID Orden: ")
-            total = leer_float("Total Factura: ")
-            if id_o:
-                crud_factura.crear(total, id_o, usuario_id)
-                print("Factura generada.")
+    def menu_facturas(usuario_id: UUID) -> None:
+        while True:
+            print("\n--- Facturación ---")
+            print(
+                "1. Listar Todas  2. Generar Factura  3. Buscar por Usuario  0. Volver"
+            )
+            op = leer_texto("Opción: ")
+            if op == "0":
+                break
+
+            if op == "1":
+                for f in crud_factura.obtener_todos():
+                    print(
+                        f"ID: {f.id_factura} | Total: {f.total} | Orden: {f.id_orden} | Fecha: {f.fecha_creacion}"
+                    )
+            elif op == "2":
+                id_o = leer_uuid("ID Orden: ")
+                total = leer_float("Total Factura: ")
+                if id_o:
+                    crud_factura.crear(total, id_o, usuario_id)
+                    print("Factura generada.")
+            elif op == "3":
+                id_u = leer_uuid("ID Usuario: ")
+
+                if id_u:
+                    facturas = crud_factura.obtener_por_usuario(id_u)
+
+                    if not facturas:
+                        print("No hay facturas para este usuario.")
+                    else:
+                        for f in facturas:
+                            print(
+                                f"ID: {f.id_factura} | Total: {f.total} | "
+                                f"Orden: {f.id_orden} | Fecha: {f.fecha_creacion}"
+                            )
 
 
 def main() -> None:
