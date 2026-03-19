@@ -20,7 +20,19 @@ def crear(
     """
     Crea una nueva factura.
 
+    Parameters
+    ----------
+    total : float
+        Valor total de la factura.
+    id_orden : UUID
+        Identificador de la orden.
+    id_usuario : UUID
+        Identificador del usuario.
 
+    Returns
+    -------
+    Factura
+        Factura creada.
     """
 
     factura = Factura(
@@ -40,16 +52,30 @@ def obtener_por_id(id_factura: UUID) -> Optional[Factura]:
     """
     Obtiene una factura por su ID.
 
+    Parameters
+    ----------
+    id_factura : UUID
+        Identificador de la factura.
 
+    Returns
+    -------
+    Optional[Factura]
+        Factura encontrada o None.
     """
 
-    return db.query(Factura).filter(Factura.id_factura == id_factura).first()
+    return db.query(Factura).filter(
+        Factura.id_factura == id_factura
+    ).first()
 
 
 def obtener_todos() -> List[Factura]:
     """
     Obtiene todas las facturas.
 
+    Returns
+    -------
+    List[Factura]
+        Lista de facturas.
     """
 
     return db.query(Factura).all()
@@ -59,9 +85,20 @@ def obtener_por_usuario(id_usuario: UUID) -> List[Factura]:
     """
     Obtiene todas las facturas de un usuario.
 
+    Parameters
+    ----------
+    id_usuario : UUID
+        Identificador del usuario.
+
+    Returns
+    -------
+    List[Factura]
+        Lista de facturas del usuario.
     """
 
-    return db.query(Factura).filter(Factura.id_usuario == id_usuario).all()
+    return db.query(Factura).filter(
+        Factura.id_usuario == id_usuario
+    ).all()
 
 
 def actualizar(
@@ -72,6 +109,17 @@ def actualizar(
     """
     Actualiza una factura.
 
+    Parameters
+    ----------
+    id_factura : UUID
+        Identificador de la factura.
+    total : float, optional
+        Nuevo valor total.
+
+    Returns
+    -------
+    Optional[Factura]
+        Factura actualizada o None si no existe.
     """
 
     factura = obtener_por_id(id_factura)
@@ -92,6 +140,15 @@ def eliminar(id_factura: UUID) -> bool:
     """
     Elimina una factura.
 
+    Parameters
+    ----------
+    id_factura : UUID
+        Identificador de la factura.
+
+    Returns
+    -------
+    bool
+        True si se eliminó, False si no existe.
     """
 
     factura = obtener_por_id(id_factura)
