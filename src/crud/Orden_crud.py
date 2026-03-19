@@ -38,7 +38,7 @@ class Orden_crud:
         mesa = self.db.query(Mesa).filter(Mesa.id_mesa == id_mesa).first()
         if not mesa:
             raise ValueError("La mesa especificada no existe.")
-        if mesa.estado != "disponible":
+        if mesa.estado.upper() != "DISPONIBLE":
             raise ValueError(f"La mesa {mesa.numero_mesa} no está disponible.")
 
         nueva_orden = Orden(id_mesa=id_mesa, id_usuario=id_usuario, estado="abierta")
