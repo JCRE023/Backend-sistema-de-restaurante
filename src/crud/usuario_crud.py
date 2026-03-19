@@ -17,6 +17,15 @@ def _hash_contrasena(contrasena: str) -> str:
     """
     Genera un hash SHA-256 de la contraseña.
 
+    Parameters
+    ----------
+    contrasena : str
+        Contraseña en texto plano.
+
+    Returns
+    -------
+    str
+        Contraseña hasheada.
     """
     return hashlib.sha256(contrasena.encode("utf-8")).hexdigest()
 
@@ -29,9 +38,31 @@ def crear(
     """
     Crea un nuevo usuario en la base de datos.
 
+    Parameters
+    ----------
+    username : str
+        Nombre de usuario.
+    password : str
+        Contraseña en texto plano (será hasheada).
+    rol : str, optional
+        Rol del usuario.
+
+    Returns
+    -------
+    Usuario
+        Usuario creado.
+
+    Raises
+    ------
+    ValueError
+        Si el usuario ya existe.
     """
 
-    existente = db.query(Usuario).filter(Usuario.username == username.strip()).first()
+    existente = (
+        db.query(Usuario)
+        .filter(Usuario.username == username.strip())
+        .first()
+    )
 
     if existente:
         raise ValueError("El usuario ya existe")
@@ -53,7 +84,17 @@ def login(username: str, password: str) -> Optional[Usuario]:
     """
     Verifica las credenciales de un usuario.
 
+    Parameters
+    ----------
+    username : str
+        Nombre de usuario.
+    password : str
+        Contraseña en texto plano.
 
+    Returns
+    -------
+    Optional[Usuario]
+        Usuario si las credenciales son correctas, de lo contrario None.
     """
 
     usuario = obtener_por_username(username)
@@ -71,7 +112,15 @@ def obtener_por_id(id_usuario: UUID) -> Optional[Usuario]:
     """
     Obtiene un usuario por su ID.
 
+    Parameters
+    ----------
+    id_usuario : UUID
+        Identificador del usuario.
 
+    Returns
+    -------
+    Optional[Usuario]
+        Usuario encontrado o None.
     """
     return db.query(Usuario).filter(Usuario.id_usuario == id_usuario).first()
 
@@ -80,14 +129,31 @@ def obtener_por_username(username: str) -> Optional[Usuario]:
     """
     Obtiene un usuario por su nombre de usuario.
 
+    Parameters
+    ----------
+    username : str
+        Nombre de usuario.
+
+    Returns
+    -------
+    Optional[Usuario]
+        Usuario encontrado o None.
     """
-    return db.query(Usuario).filter(Usuario.username == username.strip()).first()
+    return (
+        db.query(Usuario)
+        .filter(Usuario.username == username.strip())
+        .first()
+    )
 
 
 def obtener_todos() -> List[Usuario]:
     """
     Obtiene todos los usuarios registrados.
 
+    Returns
+    -------
+    List[Usuario]
+        Lista de usuarios.
     """
     return db.query(Usuario).all()
 
@@ -102,6 +168,21 @@ def actualizar(
     """
     Actualiza los datos de un usuario.
 
+    Parameters
+    ----------
+    id_usuario : UUID
+        Identificador del usuario.
+    username : str, optional
+        Nuevo nombre de usuario.
+    password : str, optional
+        Nueva contraseña.
+    rol : str, optional
+        Nuevo rol.
+
+    Returns
+    -------
+    Optional[Usuario]
+        Usuario actualizado o None si no existe.
     """
 
     usuario = obtener_por_id(id_usuario)
@@ -128,6 +209,15 @@ def eliminar(id_usuario: UUID) -> bool:
     """
     Elimina un usuario de la base de datos.
 
+    Parameters
+    ----------
+    id_usuario : UUID
+        Identificador del usuario.
+
+    Returns
+    -------
+    bool
+        True si se eliminó correctamente, False si no existe.
     """
 
     usuario = obtener_por_id(id_usuario)
