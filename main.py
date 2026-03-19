@@ -423,6 +423,7 @@ def menu_facturas(usuario_id: UUID) -> None:
     Returns:
     None
     """
+
  feat--agregar-opciones-en-main-sobre-factura-y-usuario
 
     def menu_facturas(usuario_id: UUID) -> None:
@@ -435,6 +436,7 @@ def menu_facturas(usuario_id: UUID) -> None:
             if op == "0":
                 break
 
+ qa
     while True:
         print("\n--- Facturación ---")
         print("1. Listar Todas  2. Generar Factura  3. Buscar por Usuario  0. Volver")
