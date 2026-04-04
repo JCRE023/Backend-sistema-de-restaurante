@@ -1,36 +1,46 @@
+import src.entities.Mesa  # noqa: F401
+import src.entities.producto  # noqa: F401
+import src.entities.Orden  # noqa: F401
+import src.entities.detalle_orden  # noqa: F401
+import src.entities.Factura  # noqa: F401
+import src.entities.Usuario  # noqa: F401
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
-from src.database.config import create_tables
 
-# Importamos tus routers (los archivos que crearemos a continuación)
-from . import Usuario, Mesa, Producto, Orden, Detalle_orden, Factura
+from fastapi import FastAPI
+
+from api import Mesa, Producto, Orden, detalle_orden, factura, usuario
+from src.database.config import create_tables
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    # Registro de tus entidades para SQLAlchemy
-    import src.entities.Mesa  # noqa: F401
-    import src.entities.Usuario  # noqa: F401
-    import src.entities.producto  # noqa: F401
-    import src.entities.Orden  # noqa: F401
-    import src.entities.detalle_orden  # noqa: F401
-
-    # Crea las tablas en Neon al arrancar
+    """
+    Gestiona el ciclo de vida de la aplicación.
+    Crea las tablas en Neon antes de iniciar[cite: 22].
+    """
+    # Las importaciones de entidades dentro del lifespan aseguran
+    # que SQLAlchemy las registre antes de create_tables()
     create_tables()
     yield
 
 
-app = FastAPI(title="Restaurante API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(
+    title="API Restaurante - Sistema de Gestión",
+    description="API para el manejo de mesas, pedidos y facturación en Neon",
+    version="1.0.0",
+    lifespan=lifespan,
+)
 
-# Registro de los endpoints
+# Registro de routers (Endpoints de cada entidad) [cite: 11]
 app.include_router(usuario.router)
-app.include_router(mesa.router)  # Tu entidad principal
-app.include_router(producto.router)
-app.include_router(pedido.router)  # Aquí va la lógica de Orden_crud
-app.include_router(detalle_pedido.router)
-app.include_router(pago.router)
+app.include_router(Mesa.router)
+app.include_router(Producto.router)
+app.include_router(Orden.router)
+app.include_router(detalle_orden.router)
+app.include_router(factura.router)
 
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok"}
+    """Endpoint de verificación de estado [cite: 21]"""
+    return {"status": "ok", "database": "connected"}

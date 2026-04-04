@@ -23,9 +23,6 @@ class OrdenRead(BaseModel):
     fecha_creacion: Optional[datetime.datetime]
 
 
-# --- ENDPOINTS REQUERIDOS ---
-
-
 @router.get("", response_model=List[OrdenRead])
 def listar_ordenes(db: DbSession):
     """
