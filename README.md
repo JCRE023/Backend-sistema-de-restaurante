@@ -96,3 +96,18 @@ El sistema aplica las siguientes restricciones en la capa CRUD antes de persisti
 | `psycopg2-binary` | 2.9.0 | Driver de conexión a PostgreSQL |
 | `python-dotenv` | 1.0.0 | Carga de variables de entorno |
 | `pydantic` | 2.0.0 | Validación de datos |
+
+
+Video Johan Steven Bermudez
+www.youtube.com/watch?v=LOaMkQZE8tE&feature=youtu.be
+
+Video Juan camilo rodriguez 
+https://drive.google.com/file/d/1KJFgDxC0WnQFvh8zPeNKDkjJ75ivL-jm/view?usp=sharing
+
+video Euner Murillo
+https://youtu.be/9d27BIkQR4w
+
+Video Santiago cano 
+
+https://youtu.be/vycEs9QUosI
+https://youtu.be/0Sc0kfJXHmY
