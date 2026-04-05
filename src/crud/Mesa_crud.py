@@ -1,167 +1,100 @@
 from typing import List, Optional
 from uuid import UUID
-
-from src.database.config import SessionLocal
+from sqlalchemy.orm import Session
 from src.entities.Mesa import Mesa
 
-db = SessionLocal()
 
-
-def crear_mesa(numero_mesa: str, id_usuario_creacion: UUID, estado: str) -> Mesa:
+class MesaCRUD:
     """
-    Crea una nueva mesa en el sistema.
-
-    Parametros
-    ----------
-    numero_mesa : str
-        El numero o nombre de la mesa a crear.
-    id_usuario_creacion : UUID
-        Llave primaria del usuario que crea la mesa.
-    estado : str
-        Estado de la mesa (DISPONIBLE, OCUPADA, RESERVADA).
-
-    Returns
-    -------
-    Mesa
-        Retorna la mesa creada.
+    Clase para gestionar las operaciones de persistencia de la entidad Mesa.
+    Centraliza la lógica de estados y validación de duplicados.
     """
 
-    mesa_limpia = numero_mesa.strip().upper()
-    nombre_mesa = db.query(Mesa).filter(Mesa.numero_mesa == mesa_limpia).first()
+    def __init__(self, db: Session):
+        """
+        Inicializa el servicio con la sesión inyectada desde el endpoint.
+        """
+        self.db = db
 
-    if nombre_mesa:
-        raise ValueError("La Mesa ya existe")
+    def crear_mesa(
+        self, numero_mesa: str, id_usuario_creacion: UUID, estado: str = "DISPONIBLE"
+    ) -> Mesa:
+        """
+        Crea una nueva mesa validando que el número no exista previamente.
+        """
+        mesa_limpia = numero_mesa.strip().upper()
 
-    mesa = Mesa(
-        numero_mesa=mesa_limpia,
-        estado=estado.strip(),
-        id_usuario_creacion=id_usuario_creacion,
-    )
+        # Validación de duplicados usando la sesión inyectada
+        existente = self.db.query(Mesa).filter(Mesa.numero_mesa == mesa_limpia).first()
+        if existente:
+            raise ValueError(f"La Mesa '{mesa_limpia}' ya existe en el sistema.")
 
-    db.add(mesa)
-    db.commit()
-    db.refresh(mesa)
-    return mesa
-
-
-def actualizar_estado(id_mesa: UUID, nuevo_estado: str) -> Optional[Mesa]:
-    """
-    Actualiza el estado de una mesa existente.
-
-    Parametros
-    ----------
-    id_mesa : UUID
-        llave primaria de la mesa a actualizar.
-    nuevo_estado : str
-        Nuevo estado a asignar (DISPONIBLE, OCUPADA, RESERVADA).
-
-    Returns
-    -------
-    Optional[Mesa]
-        La mesa con el estado actualizado o None si no se encuentra.
-    """
-    estado_mesas = ["DISPONIBLE", "OCUPADA", "RESERVADA"]
-
-    mesa = obtener_por_id(id_mesa)
-
-    if not mesa:
-        return None
-
-    estado_limpia = nuevo_estado.strip().upper()
-
-    if estado_limpia not in estado_mesas:
-        raise ValueError(
-            f"El estado ingresado no es válido. "
-            f"Los estados permitidos son: DISPONIBLE OCUPADA RESERVADA "
+        nueva_mesa = Mesa(
+            numero_mesa=mesa_limpia,
+            estado=estado.strip().upper(),
+            id_usuario_creacion=id_usuario_creacion,
         )
 
-    mesa.estado = estado_limpia
+        self.db.add(nueva_mesa)
+        self.db.commit()
+        self.db.refresh(nueva_mesa)
+        return nueva_mesa
 
-    db.commit()
-    db.refresh(mesa)
-    return mesa
+    def obtener_por_id(self, id_mesa: UUID) -> Optional[Mesa]:
+        """Busca una mesa específica."""
+        return self.db.query(Mesa).filter(Mesa.id_mesa == id_mesa).first()
 
+    def obtener_todas(self) -> List[Mesa]:
+        """Retorna el listado completo de mesas."""
+        return self.db.query(Mesa).all()
 
-def obtener_por_id(id_mesa: UUID) -> Optional[Mesa]:
-    """
-    Busca una mesa
+    def actualizar_estado(self, id_mesa: UUID, nuevo_estado: str) -> Optional[Mesa]:
+        """
+        Actualiza solo el estado de la mesa (útil para flujos rápidos).
+        """
+        estados_permitidos = ["DISPONIBLE", "OCUPADA", "RESERVADA"]
+        estado_limpio = nuevo_estado.strip().upper()
 
-    Parametros
-    ----------
-    id_mesa : UUID
-        llave primaria de la mesa
+        if estado_limpio not in estados_permitidos:
+            raise ValueError(
+                f"Estado no válido. Permitidos: {', '.join(estados_permitidos)}"
+            )
 
-    Returns
-    -------
-    Optional[Mesa]
-        La mesa encontrada o None si no existe.
-    """
-    return db.query(Mesa).filter(Mesa.id_mesa == id_mesa).first()
+        mesa = self.obtener_por_id(id_mesa)
+        if not mesa:
+            return None
 
+        mesa.estado = estado_limpio
+        self.db.commit()
+        self.db.refresh(mesa)
+        return mesa
 
-def obtener_todos() -> List[Mesa]:
-    """
-    Retorna una lista de todas las mesas
+    def actualizar_mesa(
+        self, id_mesa: UUID, id_usuario_edicion: UUID, **kwargs
+    ) -> Optional[Mesa]:
+        """
+        Actualización flexible de campos con registro de auditoría.
+        """
+        mesa = self.obtener_por_id(id_mesa)
+        if not mesa:
+            return None
 
-    Returns
-    -------
-    List[Mesa]
-        Lista de todos los objetos Mesa en la base de datos.
-    """
-    return db.query(Mesa).all()
+        for key, value in kwargs.items():
+            if hasattr(mesa, key):
+                setattr(mesa, key, value)
 
+        mesa.id_usuario_edicion = id_usuario_edicion
 
-def actualizar(
-    id_mesa: UUID,
-    id_usuario_edicion: UUID,
-    **kwargs: dict,
-) -> Optional[Mesa]:
-    """
-    Actualiza campos de una mesa existente
+        self.db.commit()
+        self.db.refresh(mesa)
+        return mesa
 
-    parametros
-    ----------
-    id_mesa : UUID
-        Identificador de la mesa a editar.
-    id_usuario_edicion : UUID
-        Identificador del usuario que realiza el cambio.
-    **kwargs : dict
-        Diccionario de campos y valores a actualizar.
+    def eliminar(self, id_mesa: UUID) -> bool:
+        """Elimina físicamente la mesa del sistema."""
+        mesa = self.obtener_por_id(id_mesa)
+        if not mesa:
+            return False
 
-    Returns
-    -------
-    Optional[Mesa]
-        La mesa editada o None si no se encuentra.
-    """
-    mesa = obtener_por_id(id_mesa)
-    if not mesa:
-        return None
-    for key, value in kwargs.items():
-        setattr(mesa, key, value)
-    mesa.id_usuario_edicion = id_usuario_edicion
-    db.commit()
-    db.refresh(mesa)
-
-    return mesa
-
-
-def eliminar(id_mesa: UUID) -> bool:
-    """
-    Elimina una mesa del sistema
-
-    Parametros
-    ----------
-    id_mesa : UUID
-        Identificador de la mesa a eliminar.
-
-    Returns
-    -------
-    bool
-        True si la eliminación fue exitosa, False de lo contrario.
-    """
-    mesa = obtener_por_id(id_mesa)
-    if not mesa:
-        return False
-    db.delete(mesa)
-    db.commit()
-    return True
+        self.db.delete(mesa)
+        self.db.commit()
+        return True
