@@ -6,7 +6,6 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, ConfigDict
 
 from .deps import DbSession
-from src.entities.Factura import Factura
 from src.crud import factura_crud
 
 
@@ -15,7 +14,6 @@ router = APIRouter(prefix="/facturas", tags=["Facturas"])
 
 class FacturaRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-
     id_factura: UUID
     total: float
     id_orden: UUID
@@ -29,73 +27,54 @@ class FacturaCreate(BaseModel):
     id_usuario: UUID
 
 
+
 @router.get("", response_model=List[FacturaRead])
 def listar_facturas(db: DbSession):
-    """
-    1. GET lista: Obtiene todas las facturas.
-    """
-    return db.query(Factura).all()
+    """1. GET lista: Muestra todas las facturas emitidas."""
+    return factura_crud.obtener_todos(db)
 
 
 @router.get("/{id_factura}", response_model=FacturaRead)
 def obtener_factura(db: DbSession, id_factura: UUID):
-    """
-    2. GET por id: Busca una factura por UUID.
-    """
-    factura = db.query(Factura).filter(Factura.id_factura == id_factura).first()
-
-    if not factura:
+    """2. GET por id: Busca una factura en el historial."""
+    f = factura_crud.obtener_por_id(db, id_factura)
+    if not f:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Factura no encontrada",
+            detail="Factura no encontrada"
         )
-
-    return factura
+    return f
 
 
 @router.post("", response_model=FacturaRead, status_code=status.HTTP_201_CREATED)
 def crear_factura(db: DbSession, data: FacturaCreate):
-    """
-    3. POST: Crea una factura.
-    """
+    """3. POST: Genera una nueva factura."""
     if data.total <= 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El total debe ser mayor a 0",
+            detail="El total de la factura debe ser positivo"
         )
-
-    return factura_crud.crear(data.total, data.id_orden, data.id_usuario)
+    return factura_crud.crear(db, data.total, data.id_orden, data.id_usuario)
 
 
 @router.put("/{id_factura}", response_model=FacturaRead)
 def actualizar_factura(db: DbSession, id_factura: UUID, total: float):
-    """
-    4. PUT: Actualiza el total de una factura.
-    """
-    factura = factura_crud.actualizar(id_factura, total=total)
-
-    if not factura:
+    """4. PUT: Corrige el monto total de una factura existente."""
+    f = factura_crud.actualizar(db, id_factura, total=total)
+    if not f:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Factura no encontrada",
+            detail="Factura no encontrada"
         )
-
-    return factura
+    return f
 
 
 @router.delete("/{id_factura}", status_code=status.HTTP_204_NO_CONTENT)
 def eliminar_factura(db: DbSession, id_factura: UUID):
-    """
-    5. DELETE: Elimina una factura.
-    """
-    factura = db.query(Factura).filter(Factura.id_factura == id_factura).first()
-
-    if not factura:
+    """5. DELETE: Elimina el registro de facturación."""
+    if not factura_crud.eliminar(db, id_factura):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Factura no existe",
+            detail="La factura no existe"
         )
-
-    db.delete(factura)
-    db.commit()
     return None
