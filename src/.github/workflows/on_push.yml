@@ -1,0 +1,40 @@
+name: Python check
+
+on:
+
+  pull_request:
+    branches: ["dev", "prod", "qa"]
+
+jobs:
+  python-quality-check:
+    runs-on: ubuntu-latest
+    
+    env:
+      DATABASE_URL: "postgresql://neondb_owner:npg_JcWLaIPE38bz@ep-solitary-rice-ai4gs73b-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+
+    steps:
+      - name: Descargar Código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Instalar Dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requeriments.txt
+          pip install pylint
+
+      - name: Analizar Código con Pylint
+        run: |
+          pylint $(git ls-files '*.py') --disable=C0114,C0115,C0116
+
+      - name: Validar Carga de la App
+        run: |
+          python -c "from api.app import app; print('Estructura de la aplicación validada con éxito')"
+
+      - name: Notificar Estado
+        if: always()
+        run: echo "El pipeline finalizó con estado ${{ job.status }}"
