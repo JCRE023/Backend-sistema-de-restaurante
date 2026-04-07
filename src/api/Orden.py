@@ -20,7 +20,7 @@ class OrdenRead(BaseModel):
     id_mesa: UUID
     id_usuario: UUID
     estado: str
-    fecha_creacion: Optional[datetime.datetime]
+    fecha_registro: Optional[datetime.datetime]
 
 
 @router.get("", response_model=List[OrdenRead])
