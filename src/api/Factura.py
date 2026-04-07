@@ -7,6 +7,8 @@ from pydantic import BaseModel, ConfigDict
 
 from .deps import DbSession
 from src.crud import factura_crud
+from src.entities.Orden import Orden
+from src.entities.Usuario import Usuario
 
 
 router = APIRouter(prefix="/facturas", tags=["Facturas"])
@@ -27,7 +29,6 @@ class FacturaCreate(BaseModel):
     id_usuario: UUID
 
 
-
 @router.get("", response_model=List[FacturaRead])
 def listar_facturas(db: DbSession):
     """1. GET lista: Muestra todas las facturas emitidas."""
@@ -40,8 +41,7 @@ def obtener_factura(db: DbSession, id_factura: UUID):
     f = factura_crud.obtener_por_id(db, id_factura)
     if not f:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Factura no encontrada"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Factura no encontrada"
         )
     return f
 
@@ -52,7 +52,19 @@ def crear_factura(db: DbSession, data: FacturaCreate):
     if data.total <= 0:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="El total de la factura debe ser positivo"
+            detail="El total de la factura debe ser positivo",
+        )
+    orden = db.query(Orden).filter(Orden.id_orden == data.id_orden).first()
+    if not orden:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="La orden especificada no existe",
+        )
+    usuario = db.query(Usuario).filter(Usuario.id_usuario == data.id_usuario).first()
+    if not usuario:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="El usuario especificado no existe",
         )
     return factura_crud.crear(db, data.total, data.id_orden, data.id_usuario)
 
@@ -63,8 +75,7 @@ def actualizar_factura(db: DbSession, id_factura: UUID, total: float):
     f = factura_crud.actualizar(db, id_factura, total=total)
     if not f:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Factura no encontrada"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Factura no encontrada"
         )
     return f
 
@@ -74,7 +85,6 @@ def eliminar_factura(db: DbSession, id_factura: UUID):
     """5. DELETE: Elimina el registro de facturación."""
     if not factura_crud.eliminar(db, id_factura):
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="La factura no existe"
+            status_code=status.HTTP_404_NOT_FOUND, detail="La factura no existe"
         )
     return None
