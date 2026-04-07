@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from api import Mesa, Producto, Orden, detalle_orden, factura, usuario
+from src.api import Mesa, Producto, Orden, Detalle_orden, Factura, Usuario
 from src.database.config import create_tables
 
 
@@ -32,12 +32,12 @@ app = FastAPI(
 )
 
 # Registro de routers (Endpoints de cada entidad) [cite: 11]
-app.include_router(usuario.router)
+app.include_router(Usuario.router)
 app.include_router(Mesa.router)
 app.include_router(Producto.router)
 app.include_router(Orden.router)
-app.include_router(detalle_orden.router)
-app.include_router(factura.router)
+app.include_router(Detalle_orden.router)
+app.include_router(Factura.router)
 
 
 @app.get("/health")
