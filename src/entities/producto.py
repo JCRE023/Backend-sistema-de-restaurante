@@ -31,4 +31,4 @@ class Producto(Base):
     usuario_creacion = relationship("Usuario", foreign_keys=[id_usuario_creacion])
     usuario_edita = relationship("Usuario", foreign_keys=[id_usuario_edita])
 
-    detalle = relationship("Detalle_orden", back_populates="producto")
+    detalle = relationship("Detalle_orden", back_populates="producto", cascade="all, delete-orphan")
