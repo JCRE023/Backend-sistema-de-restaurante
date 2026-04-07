@@ -48,7 +48,7 @@ def listar_productos(db: DbSession):
 def obtener_producto(db: DbSession, id_producto: UUID):
     """GET por id de producto [cite: 13]"""
     crud = ProductoCRUD(db)
-    p = crud.obtener_por_id(id_producto)
+    p = crud.obtener_producto(id_producto)
     if not p:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado"
