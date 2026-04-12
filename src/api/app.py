@@ -31,6 +31,17 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:8000",
+        "http://0.0.0.0:8000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Registro de routers (Endpoints de cada entidad) [cite: 11]
 app.include_router(Usuario.router)
 app.include_router(Mesa.router)
