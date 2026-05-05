@@ -7,6 +7,7 @@ import src.entities.Usuario  # noqa: F401
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from src.api import Mesa, Producto, Orden, Detalle_orden, Factura, Usuario
 from src.database.config import create_tables
@@ -29,6 +30,13 @@ app = FastAPI(
     description="API para el manejo de mesas, pedidos y facturación en Neon",
     version="1.0.0",
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:4200", "http://127.0.0.1:4200"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Registro de routers (Endpoints de cada entidad) [cite: 11]
