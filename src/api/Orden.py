@@ -76,11 +76,16 @@ def eliminar_orden(db: DbSession, id_orden: UUID):
     """
     5. DELETE: Elimina físicamente el registro de la orden[cite: 16].
     """
+    from src.entities.Factura import Factura
+    from src.entities.detalle_orden import Detalle_orden
+
     orden = db.query(Orden).filter(Orden.id_orden == id_orden).first()
     if not orden:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="La orden no existe"
         )
+    db.query(Factura).filter(Factura.id_orden == id_orden).delete()
+    db.query(Detalle_orden).filter(Detalle_orden.id_orden == id_orden).delete()
     db.delete(orden)
     db.commit()
     return None
