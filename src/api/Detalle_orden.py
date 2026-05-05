@@ -35,6 +35,13 @@ class DetalleRead(DetalleBase):
     id_detalle: UUID
 
 
+@router.get("/", response_model=List[DetalleRead])
+def listar_todos_los_detalles(db: DbSession, skip: int = 0, limit: int = 500):
+    """Obtiene todos los detalles de orden."""
+    crud = Detalle_orden_crud(db)
+    return crud.obtener_detalles(skip=skip, limit=limit)
+
+
 @router.post("/", response_model=DetalleRead, status_code=status.HTTP_201_CREATED)
 def agregar_item_a_orden(data: DetalleCreate, db: DbSession):
     """

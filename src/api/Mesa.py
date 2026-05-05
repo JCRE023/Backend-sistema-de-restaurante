@@ -81,6 +81,17 @@ def actualizar_datos_mesa(id_mesa: UUID, data: MesaUpdate, db: DbSession):
 @router.delete("/{id_mesa}", status_code=status.HTTP_204_NO_CONTENT)
 def eliminar_mesa(id_mesa: UUID, db: DbSession):
     """Elimina la mesa del sistema."""
+    from src.entities.Orden import Orden
+    from src.entities.Factura import Factura
+    from src.entities.detalle_orden import Detalle_orden
+
+    ordenes = db.query(Orden).filter(Orden.id_mesa == id_mesa).all()
+    for orden in ordenes:
+        db.query(Factura).filter(Factura.id_orden == orden.id_orden).delete()
+        db.query(Detalle_orden).filter(Detalle_orden.id_orden == orden.id_orden).delete()
+        db.delete(orden)
+    db.flush()
+
     crud = MesaCRUD(db)
     if not crud.eliminar(id_mesa):
         raise HTTPException(status_code=404, detail="La mesa no existe")
