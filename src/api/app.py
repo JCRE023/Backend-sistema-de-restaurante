@@ -38,6 +38,7 @@ app.add_middleware(
         "http://localhost:4200",
         "http://127.0.0.1:4200",
         "https://frontend-sistema-de-restaurante-9287wjv10.vercel.app",
+        "https://frontend-sistema-de-restaurante.vercel.app",
     ],
     allow_methods=["*"],
     allow_headers=["*"],
